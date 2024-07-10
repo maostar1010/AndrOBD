@@ -304,10 +304,12 @@ public class SettingsActivity
 		void updateNetworkSelections()
 		{
 			boolean networkSelected =
-				String.valueOf(CommService.MEDIUM.NETWORK.ordinal())
+				String.valueOf(CommService.MEDIUM.WIFI.ordinal())
 					.equals(prefs.getString(KEY_COMM_MEDIUM,""));
 			boolean bluetoothSelected =
 				String.valueOf(CommService.MEDIUM.BLUETOOTH.ordinal())
+					.equals(prefs.getString(KEY_COMM_MEDIUM,""))
+				|| String.valueOf(CommService.MEDIUM.BLE.ordinal())
 					.equals(prefs.getString(KEY_COMM_MEDIUM,""));
 			boolean usbSelected =
 					String.valueOf(CommService.MEDIUM.USB.ordinal())

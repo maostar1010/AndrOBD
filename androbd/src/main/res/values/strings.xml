@@ -296,6 +296,7 @@ period of time while the ECU recalibrates itself.
     <string name="display_range">Display range</string>
     <string name="reset_default">Default</string>
     <string name="update_period_s">Update period [s]</string>
+    <string name="pairing_request">Pairing request</string>
     <string-array name="baud_rates" translatable="false">
         <item>2400</item>
         <item>9600</item>
@@ -304,4 +305,11 @@ period of time while the ECU recalibrates itself.
         <item>57600</item>
         <item>115200</item>
     </string-array>
+    <string name="bluetooth_permission_title">Bluetooth permission</string>
+    <string name="bluetooth_permission_grant">Bluetooth permission is required by this App. Please grant in next dialog.</string>
+    <string name="bluetooth_permission_denied">Bluetooth permission was permanently denied. You have to enable permission \"%s\" in App settings.</string>
+    <string name="location_permission_title">Location permission</string>
+    <string name="location_permission_grant">This app does not use location information, but scanning for Bluetooth LE devices requires this permission. Please grant in next dialog.</string>
+    <string name="location_permission_denied">As location permission has not been granted, this app cannot scan for Bluetooth LE devices.</string>
+    <string name="stop">STOP</string>
 </resources>

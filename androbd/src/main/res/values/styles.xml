@@ -6,4 +6,5 @@
     <style name="AppTheme.Dark" parent="@android:style/Theme.DeviceDefault" >
         <item name="android:activatedBackgroundIndicator">@drawable/activated_background</item>
     </style>
+    <style name="BleTheme" parent="Theme.AppCompat.NoActionBar" />
 </resources>

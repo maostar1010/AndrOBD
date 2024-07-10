@@ -31,6 +31,7 @@ import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -54,6 +55,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.content.FileProvider;
 
 import com.fr3ts0n.androbd.plugin.Plugin;
@@ -87,6 +89,8 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
+
+import de.kai_morich.simple_bluetooth_le_terminal.SerialService;
 
 /**
  * Main Activity for AndrOBD app
@@ -505,7 +509,6 @@ public class MainActivity extends PluginManager
         ObdProt.setFixedPid(pids);
     }
 
-    @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         // instantiate superclass
@@ -520,14 +523,15 @@ public class MainActivity extends PluginManager
             final int REQUEST_EXTERNAL_STORAGE = 1;
             final String[] PERMISSIONS_STORAGE = {
                     Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.BLUETOOTH_CONNECT,
+                    Manifest.permission.BLUETOOTH_SCAN,
             };
             requestPermissions(PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
             // Workaround for FileUriExposedException in Android >= M
             StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
             StrictMode.setVmPolicy(builder.build());
         }
-
         dlgBuilder = new AlertDialog.Builder(this);
 
         // get preferences
@@ -592,6 +596,7 @@ public class MainActivity extends PluginManager
         switch (CommService.medium)
         {
             case BLUETOOTH:
+            case BLE:
                 // Get local Bluetooth adapter
                 mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
                 log.fine("Adapter: " + mBluetoothAdapter);
@@ -622,8 +627,8 @@ public class MainActivity extends PluginManager
                 }
                 break;
 
-            case USB:
-            case NETWORK:
+	        case USB:
+            case WIFI:
                 setMode(MODE.ONLINE);
                 break;
         }
@@ -1696,12 +1701,38 @@ public class MainActivity extends PluginManager
                             }
                             break;
 
+                        case BLE:
+                            if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled())
+                            {
+                                Toast.makeText(this, getString(R.string.none_found), Toast.LENGTH_SHORT).show();
+                                mode = MODE.OFFLINE;
+                            } else
+                            {
+                                // if pre-settings shall be used ...
+                                String address = prefs.getString(PRESELECT.LAST_DEV_ADDRESS.toString(), null);
+                                if (istRestoreWanted(PRESELECT.LAST_DEV_ADDRESS)
+                                    && address != null)
+                                {
+                                    // ... connect with previously connected device
+                                    connectBtDevice(address, prefs.getBoolean("bt_secure_connection", false));
+                                } else
+                                {
+                                    // ... otherwise launch the BtDeviceListActivity to see devices and do scan
+                                    Intent serverIntent = new Intent(this, de.kai_morich.simple_bluetooth_le_terminal.MainActivity.class);
+                                    startActivityForResult(serverIntent,
+                                        prefs.getBoolean("bt_secure_connection", false)
+                                            ? REQUEST_CONNECT_DEVICE_SECURE
+                                            : REQUEST_CONNECT_DEVICE_INSECURE);
+                                }
+                            }
+                            break;
+
                         case USB:
                             Intent enableIntent = new Intent(this, UsbDeviceListActivity.class);
                             startActivityForResult(enableIntent, REQUEST_CONNECT_DEVICE_USB);
                             break;
 
-                        case NETWORK:
+                        case WIFI:
                             connectNetworkDevice(prefs.getString(DEVICE_ADDRESS, null),
                                     getPrefsInt(DEVICE_PORT, 23));
                             break;

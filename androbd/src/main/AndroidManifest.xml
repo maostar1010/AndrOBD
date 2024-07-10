@@ -1,13 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- start/stop bluetooth adapter -->
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" /> <!-- connect/disconnect bluetooth devices -->
-    <uses-permission android:name="android.permission.BLUETOOTH" /> <!-- to keep Bluetooth measurement running even when screen is inactive -->
-    <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- allow saving screenshots -->
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <uses-feature android:name="android.hardware.bluetooth" android:required="true"/>
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
+
+    <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- allow keeping awake -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- allow saving screenshots -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- allow access to WIFI adapter -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- WIFI comm service -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- WIFI comm service -->
+
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> <!-- BLE serial service -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_REMOTE_MESSAGING" /> <!-- BLE serial service -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" /> <!-- BLE serial service -->
+
+    <!-- start/stop bluetooth adapter -->
+    <!-- <= 30 + Xiaomi/MIUI -->
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="32"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30"/>
+    <uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION" android:maxSdkVersion="30"/>
+    <!-- >= API 31 -->
+    <uses-permission
+        android:name="android.permission.BLUETOOTH_SCAN"
+        android:minSdkVersion="31"
+        android:usesPermissionFlags="neverForLocation"
+        tools:targetApi="s" />
+    <uses-permission
+        android:minSdkVersion="31"
+        android:name="android.permission.BLUETOOTH_CONNECT"/>
 
     <application
         android:allowBackup="true"
@@ -19,7 +41,6 @@
         <activity
             android:name=".MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="@string/app_name"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -45,6 +66,10 @@
             android:name=".BtDeviceListActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/select_device" />
+        <activity android:name="de.kai_morich.simple_bluetooth_le_terminal.MainActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/BleTheme"
+            android:label="@string/select_device" />
         <activity
             android:name=".ChartActivity"
             android:configChanges="touchscreen|orientation|screenSize"
@@ -61,6 +86,9 @@
             android:name=".PidCustomization"
             android:label="@string/customize_display"
             android:configChanges="touchscreen|orientation|screenSize" />
+        <service
+            android:name="de.kai_morich.simple_bluetooth_le_terminal.SerialService"
+            android:foregroundServiceType="remoteMessaging|connectedDevice" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

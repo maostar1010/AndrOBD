@@ -38,8 +38,9 @@ public abstract class CommService
 	public enum MEDIUM
 	{
 		BLUETOOTH,    ///< Bluetooth device
+		BLE,          ///< Bluetooth Low Energy BT4+ device
 		USB,          ///< USB device
-		NETWORK       ///< Network/WIFI device
+		WIFI,         ///< Network/WIFI device
 	}
 
 	/** media type selection */
@@ -63,7 +64,7 @@ public abstract class CommService
 	public static final ElmProt elm = new ElmProt();
 
 	Context mContext;
-	private Handler mHandler = null;
+	protected Handler mHandler = null;
 	STATE mState;
 
 	/**
